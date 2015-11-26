@@ -2,6 +2,7 @@ require "active_support/json"
 require "eventmachine"
 require "mail"
 require "sqlite3"
+require "kconv"
 
 module MailCatcher::Mail extend self
   def db
@@ -49,7 +50,7 @@ module MailCatcher::Mail extend self
       body = part.body.to_s
       # Only parts have CIDs, not mail
       cid = part.cid if part.respond_to? :cid
-      add_message_part(message_id, cid, part.mime_type || "text/plain", part.attachment? ? 1 : 0, part.filename, part.charset, body, body.length)
+      add_message_part(message_id, cid, part.mime_type || "text/plain", part.attachment? ? 1 : 0, part.filename.to_s.toutf8, part.charset, body, body.length)
     end
 
     EventMachine.next_tick do
